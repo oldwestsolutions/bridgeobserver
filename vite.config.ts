@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import checker from 'vite-plugin-checker'
+import typescript from '@rollup/plugin-typescript'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -9,6 +10,12 @@ export default defineConfig({
     react(),
     checker({
       typescript: true,
+    }),
+    typescript({
+      tsconfig: './tsconfig.json',
+      declaration: true,
+      declarationDir: 'dist',
+      exclude: ['node_modules/**'],
     }),
   ],
   resolve: {
@@ -20,6 +27,9 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: true,
     rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+      },
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
