@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Typography, Paper, Box, CircularProgress } from '@mui/material';
 import { Article } from '../types';
-import { dbx } from '../utils/dropbox';
+import { dropboxService } from '../utils/dropbox';
 
 const ArticleDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,17 +13,13 @@ const ArticleDetail: React.FC = () => {
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        // Fetch article content from Dropbox
-        const response = await dbx.filesDownload({
-          path: `/articles/${id}.json`
-        });
-        
-        // Convert the file content to Article type
-        const articleData = JSON.parse((response.result as any).fileBlob);
+        const response = await dropboxService.downloadFile(`/articles/${id}.json`);
+        const text = await response.text();
+        const articleData = JSON.parse(text);
         setArticle(articleData);
       } catch (err) {
         setError('Failed to load article');
-        console.error('Error fetching article:', err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -34,7 +30,7 @@ const ArticleDetail: React.FC = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
         <CircularProgress />
       </Box>
     );
@@ -42,8 +38,8 @@ const ArticleDetail: React.FC = () => {
 
   if (error || !article) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Typography variant="h4" color="error">
+      <Container>
+        <Typography color="error" variant="h6">
           {error || 'Article not found'}
         </Typography>
       </Container>
@@ -51,53 +47,24 @@ const ArticleDetail: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={0} sx={{ p: 3, mb: 4 }}>
-        <Typography variant="h2" gutterBottom sx={{ fontSize: '2.5rem', fontWeight: 600 }}>
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Paper elevation={0} sx={{ p: 3 }}>
+        <Typography variant="h3" gutterBottom>
           {article.title}
         </Typography>
         <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-          By {article.author} | {article.date}
+          By {article.author} • {article.date}
         </Typography>
-        {article.imageUrl && (
-          <Box sx={{ my: 4 }}>
-            <img 
-              src={article.imageUrl} 
-              alt={article.title}
-              style={{ 
-                width: '100%', 
-                maxHeight: '500px', 
-                objectFit: 'cover',
-                borderRadius: '8px'
-              }}
-            />
-          </Box>
-        )}
-        <Typography variant="body1" paragraph sx={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
+        <Box sx={{ my: 4 }}>
+          <img
+            src={article.imageUrl}
+            alt={article.title}
+            style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
+          />
+        </Box>
+        <Typography variant="body1" paragraph>
           {article.content}
         </Typography>
-        {article.tags && (
-          <Box sx={{ mt: 4 }}>
-            {article.tags.map((tag) => (
-              <Typography 
-                key={tag} 
-                variant="body2" 
-                component="span" 
-                sx={{ 
-                  mr: 1, 
-                  px: 2, 
-                  py: 0.5, 
-                  bgcolor: 'primary.light', 
-                  color: 'primary.contrastText',
-                  borderRadius: 1,
-                  display: 'inline-block'
-                }}
-              >
-                {tag}
-              </Typography>
-            ))}
-          </Box>
-        )}
       </Paper>
     </Container>
   );

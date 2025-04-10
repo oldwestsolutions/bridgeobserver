@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -7,7 +7,8 @@ import {
   ListItemText,
   Typography,
   CircularProgress,
-  Alert
+  Alert,
+  Paper
 } from '@mui/material';
 import DropboxService from '../services/dropboxService';
 import { DropboxFile } from 'dropbox';
@@ -17,15 +18,6 @@ const DropboxManager: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dropboxService, setDropboxService] = useState<DropboxService | null>(null);
-
-  useEffect(() => {
-    const accessToken = import.meta.env.VITE_DROPBOX_ACCESS_TOKEN;
-    if (accessToken) {
-      setDropboxService(new DropboxService(accessToken));
-    } else {
-      setError('Dropbox access token not found');
-    }
-  }, []);
 
   const loadFiles = async () => {
     if (!dropboxService) return;
