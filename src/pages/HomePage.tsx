@@ -119,6 +119,8 @@ const opinionPieces: Article[] = [
 ];
 
 const HomePage: React.FC = () => {
+  console.log('HomePage component rendering...');
+  
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Featured Article */}
