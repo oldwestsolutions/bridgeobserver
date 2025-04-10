@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { theme } from './styles/theme';
 import Header from './components/Header';
@@ -13,23 +13,23 @@ import SubscribePage from './pages/SubscribePage';
 import DashboardPage from './pages/DashboardPage';
 
 function App() {
+  console.log('App component rendering...');
+  
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter>
-        <Header />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/markets" element={<MarketsPage />} />
-          <Route path="/economy" element={<EconomyPage />} />
-          <Route path="/technology" element={<TechnologyPage />} />
-          <Route path="/opinion" element={<OpinionPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/subscribe" element={<SubscribePage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-        </Routes>
-        <Footer />
-      </BrowserRouter>
+      <Header />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/markets" element={<MarketsPage />} />
+        <Route path="/economy" element={<EconomyPage />} />
+        <Route path="/technology" element={<TechnologyPage />} />
+        <Route path="/opinion" element={<OpinionPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/subscribe" element={<SubscribePage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+      </Routes>
+      <Footer />
     </ThemeProvider>
   );
 }
