@@ -56,17 +56,16 @@ const marketNews = [
 
 const MarketsPage: React.FC = () => {
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h1" gutterBottom sx={{ fontSize: '2.5rem', mb: 4 }}>
-        Markets
-      </Typography>
-      
+    <Container>
       <Grid container spacing={4}>
-        {marketNews.map((article) => (
-          <Grid item xs={12} sm={6} md={4} key={article.id}>
-            <NewsCard article={article} />
-          </Grid>
-        ))}
+        <Grid item xs={12}>
+          <Typography variant="h2" component="h1" gutterBottom>
+            Markets
+          </Typography>
+          <Typography variant="h5" component="h2" gutterBottom>
+            Stay informed with the latest market updates
+          </Typography>
+        </Grid>
       </Grid>
     </Container>
   );

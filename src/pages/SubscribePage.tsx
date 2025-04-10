@@ -1,144 +1,135 @@
 import React, { useState } from 'react';
 import {
   Container,
-  Box,
+  Grid,
   Typography,
   TextField,
   Button,
   Paper,
   Alert,
-  Grid,
-  Card,
-  CardContent,
   Radio,
   RadioGroup,
   FormControlLabel,
   FormControl,
   FormLabel,
-  Divider,
-  Link as MuiLink
+  Box,
 } from '@mui/material';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
-const subscriptionPlans = [
+interface SubscriptionPlan {
+  id: string;
+  name: string;
+  price: number;
+  interval: string;
+  features: string[];
+}
+
+const subscriptionPlans: SubscriptionPlan[] = [
   {
     id: 'monthly',
-    name: 'Monthly',
-    price: '$9.99',
-    period: 'month',
+    name: 'Monthly Plan',
+    price: 9.99,
+    interval: 'month',
     features: [
-      'Access to all articles',
-      'Daily market updates',
-      'Basic newsletter',
-      'Ad-free experience'
-    ]
+      'Unlimited access to all articles',
+      'Real-time market updates',
+      'Premium research reports',
+      'Monthly market analysis',
+    ],
   },
   {
     id: 'yearly',
-    name: 'Yearly',
-    price: '$99.99',
-    period: 'year',
+    name: 'Yearly Plan',
+    price: 99.99,
+    interval: 'year',
     features: [
-      'Everything in Monthly plan',
-      'Premium newsletter',
-      'Exclusive content',
-      'Save 16%'
-    ]
-  }
+      'All Monthly Plan features',
+      'Save 16% compared to monthly',
+      'Early access to special reports',
+      'Exclusive webinars',
+    ],
+  },
 ];
 
 const SubscribePage: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState('monthly');
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      setLoading(false);
       return;
     }
 
     try {
-      // TODO: Implement actual subscription logic
-      navigate('/');
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Handle successful subscription
+      console.log('Subscription successful', { selectedPlan, formData });
     } catch (err) {
-      setError('Failed to create account. Please try again.');
+      setError('Failed to process subscription');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Container maxWidth="lg">
-      <Box sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Choose Your Subscription Plan
-        </Typography>
-        <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 4 }}>
-          Get unlimited access to premium content and exclusive features
-        </Typography>
+      <Grid container spacing={4} sx={{ py: 4 }}>
+        <Grid item xs={12}>
+          <Typography variant="h4" component="h1" gutterBottom>
+            Subscribe to Bridge Observer
+          </Typography>
+        </Grid>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
-
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
-            <FormControl component="fieldset" sx={{ width: '100%' }}>
-              <FormLabel component="legend">Select Plan</FormLabel>
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h5" gutterBottom>
+              Choose Your Plan
+            </Typography>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Subscription Options</FormLabel>
               <RadioGroup
                 value={selectedPlan}
                 onChange={(e) => setSelectedPlan(e.target.value)}
-                sx={{ mt: 2 }}
               >
                 {subscriptionPlans.map((plan) => (
-                  <Paper
-                    key={plan.id}
-                    elevation={selectedPlan === plan.id ? 3 : 1}
-                    sx={{
-                      p: 2,
-                      mb: 2,
-                      cursor: 'pointer',
-                      border: selectedPlan === plan.id ? '2px solid' : 'none',
-                      borderColor: 'primary.main'
-                    }}
-                    onClick={() => setSelectedPlan(plan.id)}
-                  >
+                  <Paper key={plan.id} sx={{ p: 2, mb: 2 }}>
                     <FormControlLabel
                       value={plan.id}
                       control={<Radio />}
                       label={
                         <Box>
                           <Typography variant="h6">{plan.name}</Typography>
-                          <Typography variant="h4" color="primary">
-                            {plan.price}
+                          <Typography variant="h5" color="primary">
+                            ${plan.price}/{plan.interval}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            per {plan.period}
-                          </Typography>
-                          <Box component="ul" sx={{ mt: 2, pl: 2 }}>
+                          <Box component="ul" sx={{ mt: 2 }}>
                             {plan.features.map((feature, index) => (
                               <Typography
-                                key={index}
                                 component="li"
-                                variant="body2"
+                                key={index}
                                 sx={{ mb: 1 }}
                               >
                                 {feature}
@@ -147,85 +138,96 @@ const SubscribePage: React.FC = () => {
                           </Box>
                         </Box>
                       }
-                      sx={{ width: '100%', m: 0 }}
                     />
                   </Paper>
                 ))}
               </RadioGroup>
             </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <Paper elevation={3} sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Create Your Account
-              </Typography>
-              <Box component="form" onSubmit={handleSubmit}>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="name"
-                  label="Full Name"
-                  name="name"
-                  autoComplete="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="confirmPassword"
-                  label="Confirm Password"
-                  type="password"
-                  id="confirmPassword"
-                  autoComplete="new-password"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                />
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Subscribe Now
-                </Button>
-                <Typography variant="body2" color="text.secondary" align="center">
-                  Already have an account?{' '}
-                  <MuiLink component={Link} to="/login" variant="body2">
-                    Sign in
-                  </MuiLink>
-                </Typography>
-              </Box>
-            </Paper>
-          </Grid>
+          </Paper>
         </Grid>
-      </Box>
+
+        <Grid item xs={12} md={6}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h5" gutterBottom>
+              Create Your Account
+            </Typography>
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+            <form onSubmit={handleSubmit}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Full Name"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    required
+                    disabled={loading}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                    disabled={loading}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    required
+                    disabled={loading}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    required
+                    disabled={loading}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading ? 'Processing...' : 'Subscribe Now'}
+                  </Button>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="body2" align="center">
+                    Already have an account?{' '}
+                    <Button component={RouterLink} to="/login">
+                      Sign in
+                    </Button>
+                  </Typography>
+                </Grid>
+              </Grid>
+            </form>
+          </Paper>
+        </Grid>
+      </Grid>
     </Container>
   );
 };
