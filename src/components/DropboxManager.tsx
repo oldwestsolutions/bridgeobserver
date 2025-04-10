@@ -1,67 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Typography,
+  Button,
   List,
   ListItem,
   ListItemText,
-  Button,
-  TextField,
+  Typography,
   CircularProgress,
-  Alert,
-  Paper
+  Alert
 } from '@mui/material';
-import { dropboxService } from '../services/dropboxService';
-import { files } from 'dropbox';
+import DropboxService from '../services/dropboxService';
+import { DropboxFile } from 'dropbox';
 
-type DropboxFile = files.FileMetadataReference | 
-                   files.FolderMetadataReference | 
-                   files.DeletedMetadataReference;
-
-export const DropboxManager: React.FC = () => {
+const DropboxManager: React.FC = () => {
   const [files, setFiles] = useState<DropboxFile[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [dropboxService, setDropboxService] = useState<DropboxService | null>(null);
 
   useEffect(() => {
-    loadFiles();
+    const accessToken = import.meta.env.VITE_DROPBOX_ACCESS_TOKEN;
+    if (accessToken) {
+      setDropboxService(new DropboxService(accessToken));
+    } else {
+      setError('Dropbox access token not found');
+    }
   }, []);
 
   const loadFiles = async () => {
+    if (!dropboxService) return;
+    
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-      const response = await dropboxService.listFiles();
-      if (response.entries) {
-        setFiles([...response.entries]);
-      }
+      const fileList = await dropboxService.listFiles();
+      setFiles(fileList);
     } catch (err) {
-      setError('Failed to load files. Please try again.');
-      console.error('Error loading files:', err);
+      setError('Failed to load files');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setUploadFile(event.target.files[0]);
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!dropboxService || !event.target.files?.length) return;
+    
+    const uploadFile = event.target.files[0];
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await dropboxService.uploadFile(uploadFile, '/');
+      await loadFiles();
+    } catch (err) {
+      setError('Failed to upload file');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleUpload = async () => {
-    if (!uploadFile) return;
-
+  const handleFileDelete = async (path: string) => {
+    if (!dropboxService) return;
+    
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-      await dropboxService.uploadFile(uploadFile.name, '/');
+      await dropboxService.deleteFile(path);
       await loadFiles();
-      setUploadFile(null);
     } catch (err) {
-      setError('Failed to upload file. Please try again.');
-      console.error('Error uploading file:', err);
+      setError('Failed to delete file');
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -69,72 +79,71 @@ export const DropboxManager: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Dropbox Manager
+      <Typography variant="h5" gutterBottom>
+        Dropbox File Manager
       </Typography>
-
+      
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
       )}
 
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+      <Box sx={{ mb: 2 }}>
+        <Button
+          variant="contained"
+          onClick={loadFiles}
+          disabled={loading}
+          sx={{ mr: 2 }}
+        >
+          Refresh Files
+        </Button>
+        
+        <input
+          accept="*/*"
+          style={{ display: 'none' }}
+          id="file-upload"
+          type="file"
+          onChange={handleFileUpload}
+        />
+        <label htmlFor="file-upload">
           <Button
             variant="contained"
-            component="label"
+            component="span"
             disabled={loading}
           >
-            Select File
-            <input
-              type="file"
-              hidden
-              onChange={handleFileChange}
-            />
+            Upload File
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleUpload}
-            disabled={!uploadFile || loading}
-          >
-            Upload
-          </Button>
-          {uploadFile && (
-            <Typography variant="body2">
-              Selected: {uploadFile.name}
-            </Typography>
-          )}
-        </Box>
-      </Paper>
+        </label>
+      </Box>
 
-      <Paper sx={{ p: 2 }}>
-        <Typography variant="h6" gutterBottom>
-          Files
-        </Typography>
-        {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <List>
-            {files.map((file) => (
-              <ListItem key={file.path_display}>
-                <ListItemText
-                  primary={file.name}
-                  secondary={file['.tag'] === 'file' ? 'File' : 'Folder'}
-                />
-              </ListItem>
-            ))}
-            {files.length === 0 && (
-              <ListItem>
-                <ListItemText primary="No files found" />
-              </ListItem>
-            )}
-          </List>
-        )}
-      </Paper>
+      {loading ? (
+        <CircularProgress />
+      ) : (
+        <List>
+          {files.map((file) => (
+            <ListItem
+              key={file.path_display}
+              secondaryAction={
+                <Button
+                  color="error"
+                  onClick={() => handleFileDelete(file.path_display)}
+                  disabled={loading}
+                >
+                  Delete
+                </Button>
+              }
+            >
+              <ListItemText
+                primary={file.name}
+                secondary={`Size: ${(file.size / 1024).toFixed(2)} KB`}
+              />
+            </ListItem>
+          ))}
+        </List>
+      )}
     </Box>
   );
-}; 
+};
+
+export default DropboxManager; 

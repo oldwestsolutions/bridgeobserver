@@ -1,5 +1,17 @@
 import React from 'react';
-import { Container, Grid, Typography, Paper } from '@mui/material';
+import {
+  Container,
+  Grid,
+  Typography,
+  Box,
+  Paper,
+  Card,
+  CardContent,
+  CardMedia,
+  Button,
+  Chip
+} from '@mui/material';
+import { Link } from 'react-router-dom';
 import NewsCard from '../components/NewsCard';
 import { Article } from '../types';
 
@@ -108,76 +120,311 @@ const opinionPieces: Article[] = [
 
 const HomePage: React.FC = () => {
   return (
-    <Container maxWidth="lg" sx={{ py: 2 }}>
-      <Grid container spacing={1}>
-        {/* Featured Article - Takes full width */}
-        <Grid item xs={12} component="section">
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* Featured Article */}
+      <Grid container spacing={4} sx={{ mb: 6 }}>
+        <Grid item xs={12}>
           <Paper
             elevation={0}
             sx={{
-              p: 2,
-              mb: 1,
-              bgcolor: 'background.paper',
-              borderRadius: 1,
+              position: 'relative',
+              borderRadius: 2,
+              overflow: 'hidden',
+              height: { xs: 300, md: 500 }
             }}
           >
-            <Typography variant="h2" gutterBottom sx={{ fontSize: '2rem' }}>
-              {featuredArticle.title}
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-              By {featuredArticle.author} | {featuredArticle.date}
-            </Typography>
-            <Typography variant="body1" paragraph>
-              {featuredArticle.excerpt}
-            </Typography>
+            <CardMedia
+              component="img"
+              image={featuredArticle.imageUrl}
+              alt={featuredArticle.title}
+              sx={{
+                height: '100%',
+                objectFit: 'cover',
+                filter: 'brightness(0.7)'
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                p: 4,
+                background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)'
+              }}
+            >
+              <Chip
+                label={featuredArticle.category}
+                color="primary"
+                sx={{ mb: 2 }}
+              />
+              <Typography
+                variant="h3"
+                component={Link}
+                to={`/article/${featuredArticle.id}`}
+                sx={{
+                  color: 'white',
+                  textDecoration: 'none',
+                  '&:hover': { textDecoration: 'underline' }
+                }}
+              >
+                {featuredArticle.title}
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{ color: 'white', mt: 2 }}
+              >
+                {featuredArticle.excerpt}
+              </Typography>
+            </Box>
           </Paper>
         </Grid>
+      </Grid>
 
-        {/* Latest News Section - 3 columns */}
-        <Grid item xs={12} component="section">
-          <Typography variant="h3" gutterBottom sx={{ fontSize: '1.5rem', mb: 0.5 }}>
+      {/* Latest News Section */}
+      <Grid container spacing={4} sx={{ mb: 6 }}>
+        <Grid item xs={12}>
+          <Typography variant="h4" component="h2" gutterBottom>
             Latest News
           </Typography>
         </Grid>
         {latestNews.map((article) => (
-          <Grid item xs={12} sm={6} md={4} key={article.id} component="article">
-            <NewsCard article={article} />
+          <Grid item xs={12} sm={6} md={4} key={article.id}>
+            <Card
+              component={Link}
+              to={`/article/${article.id}`}
+              sx={{
+                height: '100%',
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              <CardMedia
+                component="img"
+                height="200"
+                image={article.imageUrl}
+                alt={article.title}
+              />
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Chip
+                  label={article.category}
+                  size="small"
+                  sx={{ mb: 1 }}
+                />
+                <Typography
+                  gutterBottom
+                  variant="h6"
+                  component="h3"
+                  sx={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {article.title}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {article.excerpt}
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
         ))}
+      </Grid>
 
-        {/* Market Updates Section - 2 columns */}
-        <Grid item xs={12} component="section">
-          <Typography variant="h3" gutterBottom sx={{ fontSize: '1.5rem', mt: 1, mb: 0.5 }}>
+      {/* Market Updates Section */}
+      <Grid container spacing={4} sx={{ mb: 6 }}>
+        <Grid item xs={12}>
+          <Typography variant="h4" component="h2" gutterBottom>
             Market Updates
           </Typography>
         </Grid>
         {marketUpdates.map((article) => (
-          <Grid item xs={12} sm={6} key={article.id} component="article">
-            <NewsCard article={article} />
+          <Grid item xs={12} sm={6} md={4} key={article.id}>
+            <Card
+              component={Link}
+              to={`/article/${article.id}`}
+              sx={{
+                height: '100%',
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              <CardMedia
+                component="img"
+                height="200"
+                image={article.imageUrl}
+                alt={article.title}
+              />
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Chip
+                  label={article.category}
+                  size="small"
+                  sx={{ mb: 1 }}
+                />
+                <Typography
+                  gutterBottom
+                  variant="h6"
+                  component="h3"
+                  sx={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {article.title}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {article.excerpt}
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
         ))}
+      </Grid>
 
-        {/* Technology News Section - 2 columns */}
-        <Grid item xs={12} component="section">
-          <Typography variant="h3" gutterBottom sx={{ fontSize: '1.5rem', mt: 1, mb: 0.5 }}>
+      {/* Technology Section */}
+      <Grid container spacing={4} sx={{ mb: 6 }}>
+        <Grid item xs={12}>
+          <Typography variant="h4" component="h2" gutterBottom>
             Technology
           </Typography>
         </Grid>
         {technologyNews.map((article) => (
-          <Grid item xs={12} sm={6} key={article.id} component="article">
-            <NewsCard article={article} />
+          <Grid item xs={12} sm={6} md={4} key={article.id}>
+            <Card
+              component={Link}
+              to={`/article/${article.id}`}
+              sx={{
+                height: '100%',
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              <CardMedia
+                component="img"
+                height="200"
+                image={article.imageUrl}
+                alt={article.title}
+              />
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Chip
+                  label={article.category}
+                  size="small"
+                  sx={{ mb: 1 }}
+                />
+                <Typography
+                  gutterBottom
+                  variant="h6"
+                  component="h3"
+                  sx={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {article.title}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {article.excerpt}
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
         ))}
+      </Grid>
 
-        {/* Opinion Section - 2 columns */}
-        <Grid item xs={12} component="section">
-          <Typography variant="h3" gutterBottom sx={{ fontSize: '1.5rem', mt: 1, mb: 0.5 }}>
+      {/* Opinion Section */}
+      <Grid container spacing={4}>
+        <Grid item xs={12}>
+          <Typography variant="h4" component="h2" gutterBottom>
             Opinion
           </Typography>
         </Grid>
         {opinionPieces.map((article) => (
-          <Grid item xs={12} sm={6} key={article.id} component="article">
-            <NewsCard article={article} />
+          <Grid item xs={12} sm={6} md={4} key={article.id}>
+            <Card
+              component={Link}
+              to={`/article/${article.id}`}
+              sx={{
+                height: '100%',
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              <CardMedia
+                component="img"
+                height="200"
+                image={article.imageUrl}
+                alt={article.title}
+              />
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Chip
+                  label={article.category}
+                  size="small"
+                  sx={{ mb: 1 }}
+                />
+                <Typography
+                  gutterBottom
+                  variant="h6"
+                  component="h3"
+                  sx={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {article.title}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
+                  {article.excerpt}
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
         ))}
       </Grid>

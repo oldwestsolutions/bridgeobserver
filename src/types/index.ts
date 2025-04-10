@@ -1,11 +1,13 @@
 export interface Article {
-    id: string;
+    id: number | string;
     title: string;
-    author: string;
-    date: string;
     excerpt: string;
-    imageUrl: string;
     category: string;
+    date: string;
+    imageUrl: string;
+    author?: string;
+    content?: string;
+    tags?: string[];
 }
 
 export interface NavItem {

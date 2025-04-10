@@ -1,3 +1,72 @@
+# BridgeObserver
+
+A modern finance news website built with React, TypeScript, and Material-UI.
+
+## Features
+
+- Responsive design
+- Multiple news sections
+- User authentication
+- Dropbox integration for file management
+- Modern UI with Material-UI components
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+- Dropbox API access token
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/bridgeobserver.git
+cd bridgeobserver
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Create a `.env` file in the root directory and add your Dropbox access token:
+```
+VITE_DROPBOX_ACCESS_TOKEN=your_access_token_here
+```
+
+4. Start the development server:
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+## Deployment
+
+This project is configured for deployment on Vercel. To deploy:
+
+1. Push your code to GitHub
+2. Connect your GitHub repository to Vercel
+3. Add your environment variables in Vercel's project settings
+4. Deploy!
+
+## Built With
+
+- [React](https://reactjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Material-UI](https://mui.com/)
+- [Vite](https://vitejs.dev/)
+- [React Router](https://reactrouter.com/)
+- [Dropbox API](https://www.dropbox.com/developers)
+
+## License
+
+This project is licensed under the MIT License.
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
